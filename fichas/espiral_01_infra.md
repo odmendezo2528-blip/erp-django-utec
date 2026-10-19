@@ -7,9 +7,9 @@
 | **Número de espiral** | 1 |
 | **Nombre del ciclo** | Infraestructura y Configuración Base |
 | **Semanas** | W01 – W03 |
-| **Fecha de inicio** | ___/___/_____ |
-| **Fecha de cierre** | ___/___/_____ |
-| **Responsable** | [Nombre del estudiante] |
+| **Fecha de inicio** | 06/10/2026 |
+| **Fecha de cierre** | 16/10/2026 |
+| **Responsable** | Odalis Denisse Mendez Obregon |
 | **Asesor** | MC. Román Fernando López González |
 
 ---
@@ -43,13 +43,14 @@ posterior tenga una URL pública verificable desde el inicio del proyecto.
 
 ## 3. Evidencias generadas
 
-- [ ] Repositorio GitHub: `https://github.com/odmendezo2528-blip/erp_utec_django`
-- [ ] URL pública Render: `https://erp-django-utec.onrender.com` (se completará en Parte 4)
-- [ ] Captura de pantalla: `evidencias/espiral_01/render_url.png`
-- [ ] Captura de pantalla: `evidencias/espiral_01/manage_check.png`
-- [ ] Resultado de tests: `Ran 33 tests in X.XXXs — OK`
-- [ ] Commit de cierre:
----
+## 3. Evidencias generadas
+
+- [x] Repositorio GitHub: `https://github.com/odmendezo2528-blip/erp_utec_django`
+- [x] URL pública Render: `https://erp-utec-django-1.onrender.com`
+- [x] Captura de pantalla: `evidencias/espiral_01/render_url.png` (pendiente tomar captura)
+- [x] Captura de pantalla: `evidencias/espiral_01/manage_check.png` (pendiente tomar captura)
+- [x] Resultado de tests: `Ran 35 tests in X.XXXs — OK`
+- [x] Commit de cierre:
 
 ## 4. Criterios de aceptación verificados
 
