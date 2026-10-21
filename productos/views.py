@@ -1,20 +1,28 @@
 # productos/views.py
-"""Vistas de la app productos — W02 (placeholder).
-
-CRUD completo se implementa en Espiral 2 (W05-W06).
-"""
-from django.shortcuts import render
+from django.views.generic import DetailView, ListView
+from .models import Producto
 
 
-def index(request):
-    """Vista de índice de productos.
+class ProductoListView(ListView):
+    model = Producto
+    template_name = 'productos/lista.html'
+    context_object_name = 'productos'
+    paginate_by = 20
 
-    Returns:
-        HttpResponse con template productos/index.html.
-    """
-    context = {
-        'titulo': 'Productos',
-        'descripcion': 'Gestión de inventario y catálogo de productos.',
-        'espiral': 'Espiral 2 · W05',
-    }
-    return render(request, 'productos/index.html', context)
+    def get_queryset(self):
+        return (
+            Producto.objects
+            .select_related('categoria', 'proveedor')
+            .filter(activo=True)
+            .order_by('nombre')
+        )
+
+
+class ProductoDetailView(DetailView):
+    model = Producto
+    template_name = 'productos/detalle.html'
+    context_object_name = 'producto'
+    pk_url_kwarg = 'producto_id'
+
+    def get_queryset(self):
+        return Producto.objects.select_related('categoria', 'proveedor')
