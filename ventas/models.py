@@ -5,20 +5,16 @@ Modelos implementados:
     Venta        — encabezado de una venta interna.
     DetalleVenta — línea de producto dentro de una venta.
     Pedido       — orden de compra del canal e-commerce (Espiral 5).
-
-Decisiones de diseño aplicadas:
-    D-03: Venta.cliente  → PROTECT.
-    D-04: Venta.total    → @property calculada, no campo de BD.
-    D-05: DetalleVenta.producto → PROTECT.
-    D-06: DetalleVenta.precio_unitario → almacenado (histórico).
 """
+
 from decimal import Decimal
 
+from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from clientes.models  import Cliente
 from productos.models import Producto
-
 
 # ── Venta ─────────────────────────────────────────────────────────────────
 
@@ -95,6 +91,13 @@ class DetalleVenta(models.Model):
         help_text='Precio al momento de la venta (D-06).'
     )
 
+    def clean(self) -> None:
+        """Validación de negocio para línea de detalle."""
+        if self.cantidad is not None and self.cantidad < 1:
+            raise ValidationError(
+                {'cantidad': 'La cantidad debe ser al menos 1.'}
+            )
+
     class Meta:
         verbose_name        = 'Detalle de venta'
         verbose_name_plural = 'Detalles de venta'
@@ -164,6 +167,25 @@ class Pedido(models.Model):
         null=True, blank=True,
         verbose_name='Total pagado'
     )
+    total_pagado  = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal('0.00'))],  # ← Agrega esto
+        verbose_name='Total pagado'
+    )
+    
+    def clean(self) -> None:
+        """Valida que la fecha de entrega no sea anterior al pedido."""
+        if (self.fecha_entrega and self.fecha_pedido and
+                self.fecha_entrega < self.fecha_pedido.date()):
+            raise ValidationError({
+                'fecha_entrega': (
+                    'La fecha de entrega no puede ser anterior '
+                    'a la fecha del pedido.'
+                )
+            })
 
     class Meta:
         verbose_name        = 'Pedido'
