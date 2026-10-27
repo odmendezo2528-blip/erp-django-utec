@@ -3,15 +3,13 @@
 
 services:
   - type: web
-    name: erp-django-utec
+    name: erp_utec_django-1
     env: python
     plan: free
     region: oregon
     branch: main
-    buildCommand: |
-      pip install -r requirements.txt
-      python manage.py collectstatic --no-input
-      python manage.py migrate
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
+    preDeployCommand: python manage.py migrate
     startCommand: gunicorn core.wsgi --workers 2 --timeout 120 --log-file -
     healthCheckPath: /
     envVars:
