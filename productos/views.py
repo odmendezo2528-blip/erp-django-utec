@@ -1,7 +1,7 @@
 # productos/views.py
 """Vistas de la app productos — W07 y W08."""
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import Producto
@@ -68,17 +68,15 @@ class ProductoUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class ProductoDeleteView(LoginRequiredMixin, DeleteView):
+class ProductoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Producto
     template_name = 'productos/eliminar.html'
     pk_url_kwarg = 'producto_id'
     success_url = reverse_lazy('productos:lista')
+    permission_required = 'productos.delete_producto'
 
     def form_valid(self, form):
         nombre = self.object.nombre
         response = super().form_valid(form)
-        messages.success(
-            self.request,
-            f'Producto "{nombre}" eliminado.'
-        )
+        messages.success(self.request, f'Producto "{nombre}" eliminado.')
         return response
