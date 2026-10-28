@@ -195,7 +195,7 @@ JAZZMIN_UI_TWEAKS = {
     'sidebar_nav_small_text':   False,
     'sidebar_disable_expand':   False,
     'sidebar_nav_child_indent': True,
-    'sidebar_nav_compact_style': False,
+    'sidebar_nav_compact_style': False, 
     'sidebar_nav_legacy_style': False,
     'sidebar_nav_flat_style':   False,
     'theme':                    'default',
