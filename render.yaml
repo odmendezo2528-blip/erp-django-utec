@@ -9,7 +9,7 @@ services:
     region: oregon
     branch: main
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
-    preDeployCommand: python manage.py migrate
+    preDeployCommand: python manage.py migrate && python crear_admin.py
     startCommand: gunicorn core.wsgi --workers 2 --timeout 120 --log-file -
     healthCheckPath: /
     envVars:

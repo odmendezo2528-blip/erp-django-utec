@@ -7,9 +7,9 @@
 | **Número de espiral** | 1 |
 | **Nombre del ciclo** | Infraestructura y Configuración Base |
 | **Semanas** | W01 – W03 |
-| **Fecha de inicio** | 06/10/2026 |
-| **Fecha de cierre** | 16/10/2026 |
-| **Responsable** | Odalis Denisse Mendez Obregon |
+| **Fecha de inicio** | ___/___/_____ |
+| **Fecha de cierre** | ___/___/_____ |
+| **Responsable** | [Nombre del estudiante] |
 | **Asesor** | MC. Román Fernando López González |
 
 ---
@@ -43,14 +43,25 @@ posterior tenga una URL pública verificable desde el inicio del proyecto.
 
 ## 3. Evidencias generadas
 
-## 3. Evidencias generadas
-
-- [x] Repositorio GitHub: `https://github.com/odmendezo2528-blip/erp_utec_django`
-- [x] URL pública Render: `https://erp-utec-django-1.onrender.com`
-- [x] Captura de pantalla: `evidencias/espiral_01/render_url.png` (pendiente tomar captura)
-- [x] Captura de pantalla: `evidencias/espiral_01/manage_check.png` (pendiente tomar captura)
-- [x] Resultado de tests: `Ran 35 tests in X.XXXs — OK`
-- [x] Commit de cierre:
+- [ ] Repositorio GitHub: https://github.com/sjaguilary2528-beep/erp-django-utec.git
+- [ ] URL pública Render: https://erp-django-utec-samara.onrender.com
+- [ ] Captura de pantalla: `evidencias/espiral_01/render_url.png`
+- [ ] Captura de pantalla: `evidencias/espiral_01/manage_check.png`
+- [ ] Resultado de tests: Ran 35 tests in 1.296s OK
+- [ ] Commit de cierre: [main 0f3428f] Sprint 0 CIERRE [M1]: Render.com desplegado + 33 tests OK + Ficha Schmelkes E1
+ 14 files changed, 1010 insertions(+), 121 deletions(-)
+ delete mode 100644 Fichas/espiral_01_infra.md
+ create mode 100644 evidencias/Captura de pantalla 2026-10-17 225545.png
+ create mode 100644 evidencias/Captura de pantalla 2026-10-17 225654.png
+ create mode 100644 evidencias/Captura de pantalla 2026-10-17 225738.png
+ create mode 100644 "evidencias/Inicio \302\267 UTEC Celaya.html"
+ create mode 100644 "evidencias/Inicio \302\267 UTEC Celaya_files/bootstrap.bundle.min.js.descarga"
+ create mode 100644 "evidencias/Inicio \302\267 UTEC Celaya_files/bootstrap.min.css"
+ create mode 100644 "evidencias/Inicio \302\267 UTEC Celaya_files/css2"
+ create mode 100644 evidencias/espiral_01
+ create mode 100644 sprint0_retrospective.md
+ create mode 100644 tests/test_w03_deploy.py
+---
 
 ## 4. Criterios de aceptación verificados
 
@@ -69,7 +80,12 @@ posterior tenga una URL pública verificable desde el inicio del proyecto.
 | Problema | Causa | Solución aplicada |
 |---|---|---|
 | | | |
-
+| | | |
+b7afaf9 (HEAD -> main, origin/main) Corregir variables del superusuario
+48ea360 Actualizar configuracion para produccion
+7bcbc0c Crear superusuario para produccion
+b094e23 Merge con remoto, conservar versiones locales
+806bdea Fix settings_prod y render.yaml para Render
 ---
 
 ## 6. Lecciones aprendidas

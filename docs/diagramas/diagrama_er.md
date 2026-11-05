@@ -1,3 +1,13 @@
+
+---
+
+## PARTE 4 — Diagrama ER en Mermaid y dbdiagram.io (35 min)
+
+### 4.1 Crear `docs/diagramas/diagrama_er.md`
+
+Este archivo es visible directamente en GitHub con el diagrama renderizado:
+
+````markdown
 # Diagrama Entidad-Relación — ERP Django
 ## Espiral 2 · Aprobado por: MC. Román Fernando López González
 ## Fecha de aprobación: ___/___/_____

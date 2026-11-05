@@ -1,3 +1,5 @@
+### 6.1 Crear `tests/test_w04_diseno.py`
+
 """Suite de pruebas W04 — Artefactos de diseño del modelo ER.
 
 Verifica que los documentos de diseño existen y tienen contenido mínimo.

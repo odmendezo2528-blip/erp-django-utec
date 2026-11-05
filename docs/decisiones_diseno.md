@@ -43,29 +43,22 @@ Usar `activo=False` para "dar de baja" sin borrar datos.
 @property
 def total(self):
     return sum(d.subtotal for d in self.detalles.all())
-Justificación: Almacenar total crearía dependencia transitiva (viola 3FN: total depende de DetalleVenta, no de Venta.id). Además, si se modifica una línea, el total calculado siempre es correcto.
+### D-05: CASCADE en Venta → DetalleVenta
 
-Advertencia de rendimiento: Para dashboards con miles de ventas, usar annotate(total=Sum(...)) en lugar de la property.
+**Decisión:** Al eliminar una venta, sus detalles también deben eliminarse.
 
-### D-05: DetalleVenta → Producto usa on_delete=PROTECT
-Decisión: No borrar un producto que tuvo ventas históricas.
+**Justificación:** Los detalles dependen de la venta y no tienen sentido sin ella.
 
-Justificación: Los reportes de ventas históricas referencian productos. Usar activo=False en Producto para "descontinuar" sin borrar.
 
-### D-06: DetalleVenta.precio_unitario es campo almacenado
-Decisión: Almacenar el precio al momento de la venta, no derivarlo de Producto.precio.
+### D-06: Producto → DetalleVenta usa on_delete=PROTECT
 
-Justificación: El precio de un producto puede cambiar después de la venta. El histórico de ventas debe reflejar el precio real cobrado, no el precio actual del producto.
+**Decisión:** No permitir borrar un producto que tenga detalles de ventas asociados.
 
-Implementación: El save() del modelo captura el precio si no se especifica:
+**Justificación:** Se debe conservar el historial de los productos vendidos.
 
-def save(self, *args, **kwargs):
-    if not self.precio_unitario:
-        self.precio_unitario = self.producto.precio
-    super().save(*args, **kwargs)
+
 ### D-07: ConfiguracionERP como singleton
-Decisión: Una sola fila de configuración global del sistema.
 
-Implementación: Sobrescribir save() para que siempre use pk=1, y en el admin, deshabilitar el botón "Agregar".
+**Decisión:** ConfiguracionERP representa una única configuración general del ERP.
 
-Alternativa: django-constance (configuración dinámica). Se evaluará en la Espiral 7 cuando se implemente el dashboard.
+**Justificación:** Solo debe existir una configuración principal del sistema.

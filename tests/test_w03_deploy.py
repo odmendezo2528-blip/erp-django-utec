@@ -7,9 +7,10 @@ Ejecutar con:
     python manage.py test tests.test_w03_deploy --verbosity=2
 
 Resultado esperado:
-    Ran 11 tests in X.XXXs
+    Ran 10 tests in X.XXXs
     OK
 """
+import os
 from pathlib import Path
 
 from django.conf import settings
@@ -19,7 +20,7 @@ from django.test import TestCase
 BASE_DIR = Path(settings.BASE_DIR)
 
 
-class ArchivosDespliegueTest(TestCase):
+class ArchivosDesplieguTest(TestCase):
     """Verifica que los archivos de despliegue existen en el repositorio."""
 
     def test_procfile_existe(self):
@@ -104,12 +105,10 @@ class SettingsProdTest(TestCase):
 
     def test_settings_prod_tiene_debug_false(self):
         """settings_prod.py debe tener DEBUG = False."""
-        import re
         content = self._leer_settings_prod()
-        self.assertRegex(
-            content,
-            r'DEBUG\s*=\s*False',
-            "settings_prod.py debe contener 'DEBUG = False' (con cualquier espaciado)"
+        self.assertIn(
+            'DEBUG = False', content,
+            "settings_prod.py debe contener 'DEBUG = False'"
         )
 
     def test_settings_prod_importa_dj_database_url(self):
