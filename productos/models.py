@@ -5,8 +5,9 @@ Orden de implementación:
   1. Categoria  (sin FK)
   2. Producto   (FK → Categoria, FK → Proveedor)  ← Parte 3
 """
-from decimal import Decimal
 
+from .validators import validar_imagen_producto
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -81,8 +82,19 @@ class Producto(models.Model):
     activo    = models.BooleanField(
         default=True, verbose_name='Activo'
     )
-    creado    = models.DateTimeField(
-        auto_now_add=True, verbose_name='Fecha de registro'
+    
+    creado = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name='Fecha de registro'
+    )
+
+    imagen = models.ImageField(
+        upload_to='productos/',
+        null=True,
+        blank=True,
+        verbose_name='Imagen del producto',
+        help_text='Formatos permitidos: JPEG, PNG, WEBP. Máximo 5 MB.',
+        validators=[validar_imagen_producto]
     )
 
     class Meta:

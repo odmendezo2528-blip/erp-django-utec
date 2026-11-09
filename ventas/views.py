@@ -73,3 +73,38 @@ class VentaDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         response = super().form_valid(form)
         messages.success(self.request, f'Venta #{pk} eliminada.')
         return response
+
+    from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView
+from .forms import DetalleVentaForm, VentaForm
+
+def crear_venta(request):
+    if not request.user.is_authenticated:
+        return redirect(f"{settings.LOGIN_URL}?next={request.path}")
+    
+    venta_form = VentaForm(request.POST or None)
+    detalle_form = DetalleVentaForm(request.POST or None)
+
+    if request.method == 'POST':
+        if venta_form.is_valid() and detalle_form.is_valid():
+            venta = venta_form.save()
+            detalle = detalle_form.save(commit=False)
+            detalle.venta = venta
+            detalle.save()
+            messages.success(request, f'Venta #{venta.pk} registrada.')
+            return redirect('ventas:detalle', venta_id=venta.pk)
+
+    return render(request, 'ventas/crear.html', {
+        'venta_form': venta_form,
+        'detalle_form': detalle_form,
+    })
+
+class VentaDeleteView(LoginRequiredMixin, DeleteView):
+    model = Venta
+    template_name = 'ventas/eliminar.html'
+    pk_url_kwarg = 'venta_id'
+    success_url = reverse_lazy('ventas:lista')

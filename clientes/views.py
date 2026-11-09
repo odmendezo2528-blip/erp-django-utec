@@ -77,3 +77,28 @@ class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
         response = super().form_valid(form)
         messages.success(self.request, f'Cliente "{nombre}" eliminado.')
         return response
+
+    from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DeleteView
+from .forms import ClienteForm
+
+class ClienteCreateView(LoginRequiredMixin, CreateView):
+    model = Cliente
+    form_class = ClienteForm
+    template_name = 'clientes/crear.html'
+    success_url = reverse_lazy('clientes:lista')
+
+class ClienteUpdateView(LoginRequiredMixin, UpdateView):
+    model = Cliente
+    form_class = ClienteForm
+    template_name = 'clientes/editar.html'
+    pk_url_kwarg = 'cliente_id'
+    success_url = reverse_lazy('clientes:lista')
+
+class ClienteDeleteView(LoginRequiredMixin, DeleteView):
+    model = Cliente
+    template_name = 'clientes/eliminar.html'
+    pk_url_kwarg = 'cliente_id'
+    success_url = reverse_lazy('clientes:lista')
