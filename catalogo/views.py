@@ -1,4 +1,10 @@
 # catalogo/views.py
+import stripe
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from ventas.models import Pedido
+from .checkout_utils import calcular_totales, generar_numero_pedido, obtener_o_crear_cliente
+stripe.api_key = settings.STRIPE_SECRET_KEY
 from decimal import Decimal
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
@@ -96,3 +102,52 @@ def vaciar_carrito(request):
         _guardar_carrito(request, {})
         messages.info(request, 'Carrito vaciado.')
     return redirect('catalogo:carrito')
+
+@login_required
+def checkout(request):
+    carrito = _obtener_carrito(request)
+    if not carrito:
+        messages.warning(request, 'Tu carrito está vacío.')
+        return redirect('catalogo:catalogo')
+
+    totales         = calcular_totales(carrito)
+    publishable_key = settings.STRIPE_PUBLISHABLE_KEY
+
+    if request.method == 'POST':
+        try:
+            cliente = obtener_o_crear_cliente(request.user)
+            numero = generar_numero_pedido()
+            pedido = Pedido.objects.create(
+                numero_pedido = numero,
+                cliente       = cliente,
+                estado        = 'pendiente',
+                total_pagado  = totales['total'],
+            )
+            monto_centavos = int(totales['total'] * 100)
+            intent = stripe.PaymentIntent.create(
+                amount          = monto_centavos,
+                currency        = 'mxn',
+                metadata        = {'pedido_id': pedido.pk, 'pedido_num': pedido.numero_pedido, 'cliente': cliente.nombre},
+                idempotency_key = f'pedido-{pedido.pk}',
+            )
+            return render(request, 'catalogo/checkout.html', {
+                'carrito': carrito, 'totales': totales, 'pedido': pedido,
+                'client_secret': intent.client_secret, 'publishable_key': publishable_key,
+            })
+        except Exception as exc:
+            messages.error(request, f'Error: {exc}')
+            return redirect('catalogo:pago_error')
+
+    return render(request, 'catalogo/checkout.html', {
+        'carrito': carrito, 'totales': totales, 'client_secret': None, 'publishable_key': publishable_key,
+    })
+
+def pago_exitoso(request, pedido_id: int):
+    from django.shortcuts import get_object_or_404
+    pedido = get_object_or_404(Pedido, pk=pedido_id)
+    _guardar_carrito(request, {})
+    messages.success(request, f'¡Pago exitoso! Pedido {pedido.numero_pedido}')
+    return render(request, 'catalogo/pago_exitoso.html', {'pedido': pedido})
+
+def pago_error(request):
+    return render(request, 'catalogo/pago_error.html')
