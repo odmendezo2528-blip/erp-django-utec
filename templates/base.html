@@ -262,6 +262,12 @@
         <a href="{% url 'proveedores:lista' %}"
            class="erp-nav-link {% block nav_proveedores %}{% endblock %}">Proveedores</a>
         <a href="{% url 'ventas:lista' %}"
+        <a href="{% url 'catalogo:catalogo' %}" class="erp-nav-link">🛒 Tienda</a>
+        {% if carrito_total_items > 0 %}
+<a href="{% url 'catalogo:carrito' %}" class="erp-nav-link" style="position:relative;">
+    🛍️ ({{ carrito_total_items }})
+</a>
+{% endif %}
            class="erp-nav-link {% block nav_ventas %}{% endblock %}">Ventas</a>
         <a href="{% url 'reportes:inicio' %}"
            class="erp-nav-link {% block nav_reportes %}{% endblock %}">Reportes</a>

@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/',        include((api_urlpatterns, 'api'))),
     path('api/auth/token/', obtain_auth_token, name='api_token'),
     # Apps del ERP (interfaz web)
+    path('catalogo/', include('catalogo.urls', namespace='catalogo')),
     path('clientes/',    include('clientes.urls',    namespace='clientes')),
     path('proveedores/', include('proveedores.urls', namespace='proveedores')),
     path('productos/',   include('productos.urls',   namespace='productos')),

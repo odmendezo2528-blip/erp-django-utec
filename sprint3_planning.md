@@ -28,3 +28,13 @@ y generación de PDFs de facturas.
 - GET /ventas/<id>/pdf/ → descarga PDF con líneas de detalle
 - GET /productos/exportar-excel/ → archivo .xlsx descargable
 - python manage.py test tests → ≥ 107 tests OK
+
+## Sprint Backlog — actualización W12
+
+| Tarea | Estado |
+|---|---|
+| Serializers + API Views + Token Auth | ✅ W10 |
+| ImageField + Validaciones + API Media | ✅ W11 |
+| Generación de Factura PDF (xhtml2pdf) | ✅ W12 |
+| Exportación de Inventario a Excel (openpyxl) | ✅ W12 |
+| 5 tests de documentos pasando | ✅ W12 |

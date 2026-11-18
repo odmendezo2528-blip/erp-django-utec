@@ -14,6 +14,8 @@ ALLOWED_HOSTS =env.list('ALLOWED_HOSTS', default=['.onrender.com', 'localhost', 
 
 # ── Apps instaladas ───────────────────────────────────────────────────────
 INSTALLED_APPS = [
+    'django_filters',
+    'catalogo',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'catalogo.context_processors.carrito_info',
             ],
         },
     },
