@@ -9,6 +9,7 @@ Resultado esperado:
 """
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 class TemplatesRenderTest(TestCase):
@@ -44,10 +45,20 @@ class TemplatesRenderTest(TestCase):
         self.assertTemplateUsed(response, 'proveedores/index.html')
 
     def test_ventas_usa_template_correcto(self):
-        """La vista de ventas debe usar ventas/index.html."""
+        """La vista de ventas debe usar ventas/lista.html."""
+        # 1. Creamos un usuario y lo logueamos
+        user = User.objects.create_user('test_w02', password='pass')
+        self.client.force_login(user)
+        
+        # 2. Ahora sí, hacemos la petición
         response = self.client.get(reverse('ventas:lista'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'ventas/lista.html')
+        # 2. Ahora sí, hacemos la petición
+        response = self.client.get(reverse('ventas:lista'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ventas/lista.html')
+        
     def test_reportes_usa_template_correcto(self):
         """La vista de reportes debe usar reportes/index.html."""
         response = self.client.get(reverse('reportes:inicio'))

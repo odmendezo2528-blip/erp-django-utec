@@ -20,8 +20,7 @@ class ProductoEscrituraTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            'testuser', password='testpass123', is_superuser=True 
-        )
+            'testuser', password='testpass123', is_superuser=True)
         self.cat  = Categoria.objects.create(nombre='Cat Test')
         self.prod = Producto.objects.create(
             nombre='Laptop', precio=Decimal('10000.00'),
@@ -156,7 +155,7 @@ class VentaEscrituraTest(TestCase):
     """Tests de crear_venta y VentaDeleteView."""
 
     def setUp(self):
-        self.user = User.objects.create_user('userV', password='pass')
+        self.user = User.objects.create_user('userV', password='pass', is_superuser=True)
         cat       = Categoria.objects.create(nombre='Cat')
         self.prod = Producto.objects.create(
             nombre='P', precio=Decimal('100.00'), stock=5, categoria=cat
@@ -164,8 +163,9 @@ class VentaEscrituraTest(TestCase):
         self.cli  = Cliente.objects.create(nombre='C', correo='c@t.com')
 
     def test_crear_venta_sin_auth_redirige(self):
+        """Sin login → 403 por permisos (W09) o 302 (W08)."""
         r = self.client.get(reverse('ventas:crear'))
-        self.assertEqual(r.status_code, 302)
+        self.assertIn(r.status_code, [302, 403])
 
     def test_post_valido_crea_venta(self):
         """POST válido crea Venta + DetalleVenta y redirige al detalle."""

@@ -10,7 +10,7 @@ Resultado esperado:
 import sys
 from django.test import TestCase
 from django.urls import reverse, NoReverseMatch
-
+from django.contrib.auth.models import User
 
 class PythonVersionTest(TestCase):
     """Verifica que el intérprete sea Python 3.11+."""
@@ -65,10 +65,10 @@ class VistasBienvenidaTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_ventas_app_responde(self):
-        """La app ventas debe devolver HTTP 200."""
-        response = self.client.get('/ventas/')
-        self.assertEqual(response.status_code, 200)
-
+     user = User.objects.create_user('u1', password='p')
+     self.client.force_login(user)
+     response = self.client.get(reverse('ventas:lista')) # o la URL que use
+     self.assertEqual(response.status_code, 200)
 
 class ConfiguracionDjangoTest(TestCase):
     """Verifica la configuración de settings.py."""

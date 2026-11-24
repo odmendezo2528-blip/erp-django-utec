@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .webhook_views import stripe_webhook
 
 app_name = 'catalogo'
 
@@ -15,4 +16,5 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('pago-exitoso/<int:pedido_id>/', views.pago_exitoso, name='pago_exitoso'),
     path('pago-error/', views.pago_error, name='pago_error'),
+    path('webhook/', stripe_webhook, name='webhook'),
 ]

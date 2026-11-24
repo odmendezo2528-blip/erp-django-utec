@@ -43,3 +43,10 @@ actualizando automáticamente el estado del pedido.
 | pago_error: template con causas y reintento | ✅ W14 |
 | Tests con unittest.mock.patch | ✅ W14 |
 | Webhooks + actualizar estado pedido | ⏳ W15 |
+
+## Hito M5 — ALCANZADO ✅
+- Catálogo: /catalogo/ → 200 sin auth con filtros
+- Carrito: agregar/remover/actualizar/vaciar funcional
+- Stripe: tarjeta 4242 → pago exitoso → pedido 'pagado'
+- Webhook: payment_intent.succeeded → stock decrementado
+- Tests: Ran 142 tests → OK

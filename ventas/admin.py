@@ -44,12 +44,13 @@ class DetalleVentaAdmin(admin.ModelAdmin):
         return f"${obj.subtotal:.2f}"
 
 
+from django.contrib import admin
+from .models import Pedido
+
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    """Admin de pedidos de e-commerce."""
-
-    list_display   = ['numero_pedido', 'cliente', 'estado',
-                      'fecha_pedido', 'total_pagado']
-    search_fields  = ['numero_pedido', 'cliente__nombre']
-    list_filter    = ['estado']
-    readonly_fields = ['fecha_pedido']
+    list_display    = ['numero_pedido', 'cliente', 'estado', 'total_pagado', 'creado']
+    list_filter     = ['estado']
+    search_fields   = ['numero_pedido', 'cliente__nombre']
+    readonly_fields = ['creado', 'items_snapshot']
+    ordering        = ['-creado']
