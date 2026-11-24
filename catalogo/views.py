@@ -1,5 +1,6 @@
 # catalogo/views.py
 import stripe
+from ventas.tasks import enviar_confirmacion_pedido
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from ventas.models import Pedido
@@ -146,6 +147,7 @@ def pago_exitoso(request, pedido_id: int):
     from django.shortcuts import get_object_or_404
     pedido = get_object_or_404(Pedido, pk=pedido_id)
     _guardar_carrito(request, {})
+    enviar_confirmacion_pedido.delay(pedido.pk)
     messages.success(request, f'¡Pago exitoso! Pedido {pedido.numero_pedido}')
     return render(request, 'catalogo/pago_exitoso.html', {'pedido': pedido})
 

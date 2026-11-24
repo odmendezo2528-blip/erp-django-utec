@@ -1,12 +1,14 @@
 import logging
 import stripe
 from django.conf import settings
+from ventas.tasks import enviar_confirmacion_pedido
 from django.db.models import F
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from productos.models import Producto
 from ventas.models import Pedido
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,16 +36,29 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 def _manejar_pago_exitoso(payment_intent):
+    """Procesa un pago confirmado por Stripe."""
     pedido_id = payment_intent.get('metadata', {}).get('pedido_id')
-    if not pedido_id: return
+    if not pedido_id:
+        logger.warning('Webhook: PaymentIntent sin pedido_id en metadata.')
+        return
+
     try:
         pedido = Pedido.objects.get(pk=pedido_id)
-        if pedido.estado != 'pagado':
-            pedido.estado = 'pagado'
-            pedido.save(update_fields=['estado'])
-            _descontar_stock(pedido)
     except Pedido.DoesNotExist:
-        pass
+        logger.error(f'Webhook: Pedido {pedido_id} no encontrado en BD.')
+        return
+
+    if pedido.estado != 'pagado':
+        pedido.estado = 'pagado'
+        pedido.save(update_fields=['estado'])
+        logger.info(f'Pedido {pedido.numero_pedido} actualizado a "pagado".')
+        _descontar_stock(pedido)
+
+        # ── NUEVO W16: Disparar la tarea asíncrona ──
+        from ventas.tasks import enviar_confirmacion_pedido
+        enviar_confirmacion_pedido.delay(pedido.pk)
+    else:
+        logger.info(f'Pedido {pedido.numero_pedido} ya estaba pagado — idempotente.')
 
 def _manejar_pago_fallido(payment_intent):
     pedido_id = payment_intent.get('metadata', {}).get('pedido_id')
