@@ -42,6 +42,11 @@ class Pedido(models.Model):
         ('pagado', 'Pagado'),
         ('cancelado', 'Cancelado'),
     ]
+    correo_enviado = models.BooleanField(
+    default=False,
+    verbose_name='Correo de confirmación enviado',
+    help_text='True cuando se envió el correo de confirmación al cliente.'
+    )
     
     numero_pedido = models.CharField(max_length=20, unique=True)
     cliente       = models.ForeignKey(Cliente, on_delete=models.PROTECT)

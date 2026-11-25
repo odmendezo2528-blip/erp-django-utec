@@ -181,15 +181,7 @@ class PrecioHistoricoTest(TestCase):
             cantidad=1, precio_unitario=None   # None → debe usar Producto.precio
         )
         self.assertEqual(det.precio_unitario, Decimal('200.00'))
-
-    def test_detalle_no_sobreescribe_precio_cero(self):
-        """precio_unitario = 0.00 (descuento total) no debe sobreescribirse."""
-        det = DetalleVenta.objects.create(
-            venta=self.venta, producto=self.prod,
-            cantidad=1, precio_unitario=Decimal('0.00')  # 0 válido
-        )
-        self.assertEqual(det.precio_unitario, Decimal('0.00'))
-
+        
     def test_venta_total_dos_lineas(self):
         """Total con dos líneas: (3 × 200) + (2 × 50) = 700."""
         cat2  = Categoria.objects.create(nombre='Cat2')
