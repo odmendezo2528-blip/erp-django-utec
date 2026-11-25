@@ -1,12 +1,16 @@
-"""Tareas asíncronas de la app ventas — W17."""
+"""Tareas asíncronas de la app ventas — W17 / W18."""
 import logging
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
+from decimal import Decimal
+from django.db.models import Sum
 
 logger = logging.getLogger(__name__)
+
+# ── TAREA 1: Confirmación de Pedido ──────────────────────────────────────
 
 @shared_task(
     bind=True,
@@ -24,7 +28,6 @@ def enviar_confirmacion_pedido(self, pedido_id: int) -> dict:
         logger.error(f'[correo_confirmacion] Pedido {pedido_id} no existe.')
         return {'estado': 'error', 'razon': 'Pedido no encontrado'}
 
-    # ── Verificación de idempotencia ────────────────────────────────────
     if pedido.correo_enviado:
         logger.info(f'[correo_confirmacion] Pedido {pedido.numero_pedido}: correo ya enviado — skip.')
         return {'estado': 'skip', 'pedido_id': pedido_id, 'razon': 'correo ya enviado'}
@@ -40,7 +43,7 @@ def enviar_confirmacion_pedido(self, pedido_id: int) -> dict:
         'url_pedido': url_pedido,
     }
 
-    asunto     = f'Confirmación de pedido {pedido.numero_pedido} — {config.nombre_empresa}'
+    asunto      = f'Confirmación de pedido {pedido.numero_pedido} — {config.nombre_empresa}'
     texto_plano = render_to_string('emails/confirmacion_pedido.txt', contexto)
     html_body   = render_to_string('emails/confirmacion_pedido.html', contexto)
 
@@ -62,6 +65,8 @@ def enviar_confirmacion_pedido(self, pedido_id: int) -> dict:
         logger.error(f'[correo_confirmacion] Error al enviar correo: {exc}')
         raise self.retry(exc=exc, countdown=60 * (self.request.retries + 1))
 
+
+# ── TAREA 2: Verificar Stock Bajo ────────────────────────────────────────
 
 @shared_task(bind=True, max_retries=1, name='ventas.verificar_stock_bajo')
 def verificar_stock_bajo(self, umbral: int = 5) -> dict:
@@ -115,3 +120,52 @@ def _enviar_alerta_stock(productos_bajos: list, umbral: int) -> None:
         logger.info(f'[stock_bajo] Alerta enviada a {admin_correo}. {len(productos_bajos)} productos.')
     except Exception as exc:
         logger.error(f'[stock_bajo] Error al enviar alerta: {exc}')
+
+
+# ── TAREA 3: Reporte Diario de Ventas (W18) ──────────────────────────────
+
+@shared_task(bind=True, name='ventas.reporte_ventas_diario')
+def reporte_ventas_diario(self):
+    from configuracion.models import ConfiguracionERP
+    from ventas.models import Pedido, Venta
+
+    hoy = timezone.localdate()
+    config = ConfiguracionERP.get_instance()
+    
+    # Filtramos pedidos de hoy usando 'creado' (que es el campo que tiene tu modelo)
+    pedidos_hoy = Pedido.objects.filter(creado__date=hoy, estado='pagado')
+    
+    total_pedidos = pedidos_hoy.count()
+    total_facturado = pedidos_hoy.aggregate(total=Sum('total_pagado'))['total'] or Decimal('0.00')
+
+    contexto = {
+        'fecha': hoy.strftime('%d/%m/%Y'),
+        'config': config,
+        'total_pedidos': total_pedidos,
+        'total_facturado': total_facturado,
+        'top_productos': [], # Lo dejamos vacío por ahora para que no falle
+        'url_admin': 'https://erp-django-utec.onrender.com/admin/',
+    }
+
+    asunto = f'Reporte de ventas del {contexto["fecha"]}'
+    texto_plano = f"Pedidos hoy: {total_pedidos}\nTotal: ${total_facturado}"
+    html_body = render_to_string('emails/reporte_ventas.html', contexto)
+
+    if settings.ADMINS:
+        admin_correo = settings.ADMINS[0][1]
+        mensaje = EmailMultiAlternatives(
+            subject=asunto, body=texto_plano, from_email=settings.DEFAULT_FROM_EMAIL, to=[admin_correo]
+        )
+        mensaje.attach_alternative(html_body, 'text/html')
+        try:
+            mensaje.send()
+            logger.info(f'[reporte_diario] Reporte enviado a {admin_correo}.')
+        except Exception as exc:
+            logger.error(f'[reporte_diario] Error al enviar reporte: {exc}')
+
+    return {
+        'fecha': str(hoy),
+        'total_pedidos': total_pedidos,
+        'total_facturado': str(total_facturado),
+        'top_productos': [],
+    }

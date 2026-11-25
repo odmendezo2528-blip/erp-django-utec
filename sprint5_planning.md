@@ -57,3 +57,15 @@ stock bajo y reporte diario de ventas.
 | verificar_stock_bajo: alerta al admin | ✅ W17 |
 | 8 tests con mail.outbox | ✅ W17 |
 | Celery Beat + tareas programadas | ⏳ W18 |
+
+## Sprint 5 — Estado final W18
+
+| HU | Estado | Pts |
+|---|---|---|
+| HU-E6-01 a HU-E6-06 | ✅ Completadas | 18/18 |
+
+## Hito M6 — ALCANZADO ✅
+- Worker de Celery: procesa tareas.
+- Beat de Celery: programa tareas (reporte diario a las 8:00 AM).
+- Correos: confirmación de pedido y alerta de stock.
+- 8 tests de la W18 pasando.
